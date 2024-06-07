@@ -28,53 +28,46 @@ namespace ClaseHilos
             new Producto("Gorra", 16, 10)
         };
 
-      static int precio_dolar = 500;
-      static readonly object locker = new object();
-      static void Tarea1()
+        static int precio_dolar = 500;
+        static readonly object locker = new object();
+        static void Tarea1()
       {
             lock (locker)
             {
                 foreach (Producto producto in productos)
                 {
-                    //Console.WriteLine(producto.Nombre + "se aumento en 10 unidades la cantidad de stcok");
                     producto.CantidadEnStock += 10;
-                    Console.WriteLine($"Stock actualizado: {producto.Nombre} - Nueva cantidad en stock: {producto.CantidadEnStock}");
-
                 }
             }
-            //throw new NotImplementedException();
         }
       static void Tarea2()
       {
             lock (locker)
             {
-
-
                 precio_dolar = 876;
-                    //producto.PrecioUnitarioDolares *= precio_dolar;
-                    //Console.WriteLine($"Precio actualizado: {producto.Nombre} - : ${producto.PrecioUnitarioDolares}");
-                
             }
-         //throw new NotImplementedException();
       }
       static void Tarea3()
       {
-            //decimal precio_total = 0;
+            decimal precio_total = 0;
             lock (locker)
             {
                 foreach (Producto producto in productos)
                 {
-                    Console.WriteLine($"Stock actualizado: {producto.Nombre} - Nueva cantidad en stock: {producto.CantidadEnStock} - precio actualizado local : {producto.PrecioUnitarioDolares}");
-                    //precio_total += producto.PrecioUnitarioDolares;
-                    //Console.WriteLine($"Precio actualizado: {producto.Nombre} - precio actualizado : {producto.PrecioUnitarioDolares}");
+                    decimal precio_total_por_producto = producto.CantidadEnStock * precio_dolar * producto.PrecioUnitarioDolares;
+                    Console.WriteLine($"Stock actualizado: {producto.Nombre} - Nueva cantidad en stock: {producto.CantidadEnStock} " 
+                        + $" precio actualizado en pesos de cada unidad: ${producto.PrecioUnitarioDolares * precio_dolar}" 
+                        + $" precio total: ${(precio_total_por_producto)}");
+                    precio_total += precio_total_por_producto;
+
                 }
             }
-            //}//Console.WriteLine($"Precio total : {precio_total}");
-         //throw new NotImplementedException();
+            Console.WriteLine($"Precio total general: ${precio_total}");
 
-      }
 
-      internal static void Excecute()
+        }
+
+        internal static void Excecute()
       {
             Thread task1 = new Thread(new ThreadStart(Tarea1));
             Thread task2 = new Thread(new ThreadStart(Tarea2));
@@ -82,15 +75,14 @@ namespace ClaseHilos
 
             task1.Start();
             task2.Start();
-            task3.Start();
-            
+
             task1.Join();
             task2.Join();
-            task3.Join();
+            
+            task3.Start();
+            task3.Join();   
 
 
-            //Console.WriteLine(productos);
-         //throw new NotImplementedException();
-      }
-   }
+        }
+    }
 }
