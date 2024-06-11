@@ -55,16 +55,25 @@ namespace ClaseHilos
                 foreach (Producto producto in productos)
                 {
                     decimal precio_total_por_producto = producto.CantidadEnStock * precio_dolar * producto.PrecioUnitarioDolares;
-                    Console.WriteLine($"Stock actualizado: {producto.Nombre} - Nueva cantidad en stock: {producto.CantidadEnStock} " 
-                        + $" precio actualizado en pesos de cada unidad: ${producto.PrecioUnitarioDolares * precio_dolar}" 
-                        + $" precio total: ${(precio_total_por_producto)}");
+                    Console.WriteLine($"{producto.Nombre} - Nueva cantidad en stock: {producto.CantidadEnStock} " 
+                        + $",precio actualizado en pesos de cada unidad: ${producto.PrecioUnitarioDolares * precio_dolar}" 
+                        + $"y precio total: ${(precio_total_por_producto)}");
                     precio_total += precio_total_por_producto;
 
                 }
             }
             Console.WriteLine($"Precio total general: ${precio_total}");
+        }
 
-
+        static void TareaEvolutiva()
+        {
+            lock (locker)
+            {
+                foreach (Producto p in productos)
+                {
+                    p.PrecioUnitarioDolares = p.PrecioUnitarioDolares * 110 / 100;
+                }
+            }
         }
 
         internal static void Excecute()
@@ -72,13 +81,17 @@ namespace ClaseHilos
             Thread task1 = new Thread(new ThreadStart(Tarea1));
             Thread task2 = new Thread(new ThreadStart(Tarea2));
             Thread task3 = new Thread(new ThreadStart(Tarea3));
+            Thread taskEvolutiva = new Thread(new ThreadStart(TareaEvolutiva));
 
             task1.Start();
             task2.Start();
+            taskEvolutiva.Start();
 
             task1.Join();
             task2.Join();
+            taskEvolutiva.Join();
             
+
             task3.Start();
             task3.Join();   
 
